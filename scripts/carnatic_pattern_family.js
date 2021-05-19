@@ -1,9 +1,9 @@
 var target_id = 21186;
 var secondsFactor = 0.0029024875016400026;
 var importance_threshold = 0.4;
-var dataFile = "../files/kamakshi_hierarchy.tsv";
-var pitchFile = "../files/kamakshi_pitch.tsv";
-var trackName = "Sanjay Subrahmanyan - Kamakshi.mp3";
+var dataFile = "/files/kamakshi_hierarchy.tsv";
+var pitchFile = "/files/kamakshi_pitch.tsv";
+var trackFile = "tracks/Sanjay Subrahmanyan - Kamakshi.mp3";
 
 var data_raw;
 var data = {};
@@ -153,7 +153,7 @@ function preload() {
     }
   });
 
-  track = loadSound("../tracks/" + trackName);
+  track = loadSound(trackFile);
 }
 
 function setup () {
