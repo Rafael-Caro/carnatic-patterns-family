@@ -184,10 +184,10 @@ function CreatePlot (id, start, end, group, index, isTarget) {
     noStroke();
     fill("black");
     text(this.title, hor_sep, this.y);
-    text(time(start) + " (" + plot_start + ")", hor_sep, this.boxY+box_h+3);
+    text(time(plot_start) + " (" + plot_start + ")", hor_sep, this.boxY+box_h+3);
     textAlign(RIGHT, TOP);
     text(groups[group] + " (" + groups[group].length + ")", hor_sep + plot_w, this.y);
-    text(time(end) + " (" + plot_end + ")", hor_sep + plot_w, this.boxY+box_h+3);
+    text(time(plot_end) + " (" + plot_end + ")", hor_sep + plot_w, this.boxY+box_h+3);
 
     strokeWeight(1);
     stroke("black");
