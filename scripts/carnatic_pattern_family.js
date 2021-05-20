@@ -1,9 +1,11 @@
-var target_id = 21186;
 var secondsFactor = 0.0029024875016400026;
 var importance_threshold = 0.4;
 var dataFile = "files/kamakshi_hierarchy.tsv";
 var pitchFile = "files/kamakshi_pitch.tsv";
 var trackFile = "tracks/Sanjay Subrahmanyan - Kamakshi.mp3";
+
+var input;
+var button;
 
 var data_raw;
 var data = {};
@@ -17,11 +19,10 @@ var ver_sep = 20;
 var hor_sep = 10;
 var text_h = 15;
 var box_h = plot_h - 2 * text_h;
+var plots_num = 36;
 
-var target;
-
-var parents = [];
-var children = [];
+// var parents = [];
+// var children = [];
 var plot_start;
 var plot_end;
 var plot_pitch = [];
@@ -42,16 +43,30 @@ function preload() {
       element["group"] = row.obj.group_number;
       element["start"] = (row.obj.seq_start * secondsFactor).toFixed(2);
       element["end"] = (row.obj.seq_end * secondsFactor).toFixed(2);
-      if (row.obj.parent_seqs.length == 0) {
-        element["parents"] = [];
-      } else {
-        element["parents"] = JSON.parse(row.obj.parent_seqs);
+      element["parents"] = []
+      if (row.obj.parent_seqs.length > 0) {
+        var all_parents = JSON.parse(row.obj.parent_seqs);
+        for (var j = 0; j < all_parents.length; j++) {
+          if (!element["parents"].includes(all_parents[j])) {
+            element["parents"].push(all_parents[j])
+          }
+        }
       }
-      if (row.obj.child_sequence_ix.length == 0) {
-        element["children"] = [];
-      } else {
-        element["children"] = JSON.parse(row.obj.child_sequence_ix);
+      element["children"] = []
+      if (row.obj.child_sequence_ix.length > 0) {
+        var all_children = JSON.parse(row.obj.child_sequence_ix);
+        for (var j = 0; j < all_children.length; j++) {
+          if (!element["children"].includes(all_children[j])) {
+            element["children"].push(all_children[j])
+          }
+        }
       }
+
+      // if (row.obj.child_sequence_ix.length == 0) {
+      //   element["children"] = [];
+      // } else {
+      //   element["children"] = JSON.parse(row.obj.child_sequence_ix);
+      // }
       data[str(row.obj.seq_start)] = element;
       if (row.obj.importance <= importance_threshold) {
         if (Object.keys(groups).includes(str(row.obj.group_number))) {
@@ -62,34 +77,30 @@ function preload() {
       }
     }
 
-    // Data for the basic plot
-    target = data[target_id]
-    plot_start = target.start;
-    plot_end = target.end;
-    console.log(plot_start, plot_end);
-
-    // Search for the minimum time
-    for (var i = 0; i < target.parents.length; i++) {
-      if (Object.keys(data).includes(str(target.parents[i]))) {
-        var value = data[target.parents[i]].start;
-        if (value < plot_start) {
-          plot_start = value;
+    // Calculate the maximum plots possible
+    var total = 0;
+    var max_id;
+    var keys = Object.keys(data);
+    for (var i = 0; i < keys.length; i++) {
+      var local_total = 0;
+      var el = data[keys[i]];
+      for (var j = 0; j < el.parents.length; j++) {
+        if (keys.includes(str(el.parents[j]))) {
+          local_total++;
         }
-        parents.push([target.parents[i], value, data[target.parents[i]].end, data[target.parents[i]].group]);
+      }
+      for (var j = 0; j < el.children.length; j++) {
+        if (keys.includes(str(el.children[j]))) {
+          local_total++;
+        }
+      }
+      if (local_total > total) {
+        total = local_total;
+        max_id = keys[i]
       }
     }
-
-    // Search for the maximum time
-    for (var i = 0; i < target.children.length; i++) {
-      if (Object.keys(data).includes(str(target.children[i]))) {
-        var value = data[target.children[i]].end;
-        if (value > plot_end) {
-          plot_end = value;
-        }
-        children.push([target.children[i], data[target.children[i]].start, value, data[target.children[i]].group]);
-      }
-    }
-    console.log(plot_start, plot_end);
+    console.log(total, max_id);
+    plots_num = total + 1;
   });
 
   pitch_raw = loadTable(pitchFile, "tsv", undefined, function () {
@@ -98,75 +109,121 @@ function preload() {
       var hz = float(pitch_raw.rows[i].arr[1]);
       pitch[time] = hz;
     }
-
-    // Search for max and min pitch range for the plot
-    for (var i = plot_start * 100; i <= plot_end * 100; i++) {
-      var y = pitch[i/100];
-      if (pitch_max == undefined) {
-        pitch_max = y;
-      } else {
-        if (pitch_max < y) {
-          pitch_max = y;
-        }
-      }
-      if (y > 0) {
-        if (pitch_min == undefined) {
-          pitch_min = y;
-        } else {
-          if (pitch_min > y) {
-            pitch_min = y;
-          }
-        }
-      }
-    }
-
-    // Computing pitch track for the basic plot
-    for (var i = plot_start * 100; i <= plot_end * 100; i++) {
-      var x = map(i, plot_start*100, plot_end*100, 0, plot_w);
-      var y;
-      if (pitch[i/100] < pitch_min) {
-        y = map(pitch_min-10, pitch_min-10, pitch_max+10, box_h, 0);
-      } else {
-        y = map(pitch[i/100], pitch_min-10, pitch_max+10, box_h, 0);
-      }
-      plot_pitch.push([x, y]);
-    }
-
-    // Creating basic plots
-    // Parent plots
-    for (var i = 0; i < parents.length; i++) {
-      var plot = new CreatePlot (parents[i][0], parents[i][1], parents[i][2], parents[i][3], plots_index, false);
-      plots_index++;
-      plots_list.push(plot);
-    }
-
-    // Target plot
-    var plot = new CreatePlot (target_id, target.start, target.end, target.group, plots_index, true);
-    plots_index++;
-    plots_list.push(plot);
-
-    // Children plots
-    for (var i = 0; i < children.length; i++) {
-      var plot = new CreatePlot (children[i][0], children[i][1], children[i][2], children[i][3], plots_index, false);
-      plots_index++;
-      plots_list.push(plot);
-    }
   });
 
   track = loadSound(trackFile);
 }
 
 function setup () {
-  var plots_num = parents.length + children.length + 1;
-  var canvas = createCanvas(plot_w + 2 * hor_sep,  (plot_h + 2 * ver_sep) * (plots_list.length - 1));
+  var canvas = createCanvas(plot_w + 2 * hor_sep,  (plot_h + ver_sep) * plots_num);
   var div = select("#sketch-holder");
   canvas.parent("sketch-holder");
+
+  input = select("#input");
+
+  button = select("#button");
+  button.mousePressed(function() {
+    start();
+  })
+
+  start();
 }
 
 function draw () {
-  for (var i = 0; plots_list.length; i++) {
-    console.log(plots_list[i].id);
+  background(255);
+  for (var i = 0; i < plots_list.length; i++) {
     plots_list[i].display();
+  }
+}
+
+function start () {
+  // Reset
+  var parents = [];
+  var children = [];
+  plot_pitch = [];
+  plots_index = 0;
+  plots_list = [];
+
+  // Data for the basic plot
+  var target = data[input.value()];
+  plot_start = target.start;
+  plot_end = target.end;
+  console.log(plot_start, plot_end);
+
+  // Search for the minimum time
+  for (var i = 0; i < target.parents.length; i++) {
+    if (Object.keys(data).includes(str(target.parents[i]))) {
+      var value = data[target.parents[i]].start;
+      if (value < plot_start) {
+        plot_start = value;
+      }
+      parents.push([target.parents[i], value, data[target.parents[i]].end, data[target.parents[i]].group]);
+    }
+  }
+
+  // Search for the maximum time
+  for (var i = 0; i < target.children.length; i++) {
+    if (Object.keys(data).includes(str(target.children[i]))) {
+      var value = data[target.children[i]].end;
+      if (value > plot_end) {
+        plot_end = value;
+      }
+      children.push([target.children[i], data[target.children[i]].start, value, data[target.children[i]].group]);
+    }
+  }
+  console.log(plot_start, plot_end);
+
+  // Search for max and min pitch range for the plot
+  for (var i = plot_start * 100; i <= plot_end * 100; i++) {
+    var y = pitch[i/100];
+    if (pitch_max == undefined) {
+      pitch_max = y;
+    } else {
+      if (pitch_max < y) {
+        pitch_max = y;
+      }
+    }
+    if (y > 0) {
+      if (pitch_min == undefined) {
+        pitch_min = y;
+      } else {
+        if (pitch_min > y) {
+          pitch_min = y;
+        }
+      }
+    }
+  }
+
+  // Computing pitch track for the basic plot
+  for (var i = plot_start * 100; i <= plot_end * 100; i++) {
+    var x = map(i, plot_start*100, plot_end*100, 0, plot_w);
+    var y;
+    if (pitch[i/100] < pitch_min) {
+      y = map(pitch_min-10, pitch_min-10, pitch_max+10, box_h, 0);
+    } else {
+      y = map(pitch[i/100], pitch_min-10, pitch_max+10, box_h, 0);
+    }
+    plot_pitch.push([x, y]);
+  }
+
+  // Creating basic plots
+  // Parent plots
+  for (var i = 0; i < parents.length; i++) {
+    var plot = new CreatePlot (parents[i][0], parents[i][1], parents[i][2], parents[i][3], plots_index, false);
+    plots_index++;
+    plots_list.push(plot);
+  }
+
+  // Target plot
+  var plot = new CreatePlot (input.value(), target.start, target.end, target.group, plots_index, true);
+  plots_index++;
+  plots_list.push(plot);
+
+  // Children plots
+  for (var i = 0; i < children.length; i++) {
+    var plot = new CreatePlot (children[i][0], children[i][1], children[i][2], children[i][3], plots_index, false);
+    plots_index++;
+    plots_list.push(plot);
   }
 }
 
