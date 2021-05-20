@@ -37,6 +37,7 @@ var raga_grid = [];
 var svara_list = [];
 var plot_grid = [];
 var plot_svaras = [];
+var time_grid = [];
 var svaras = {"R1": 100, "R2": 200, "R3": 300, "G1": 200, "G2": 300, "G3": 400, "M1": 500, "M2": 600, "P": 700, "D1": 800, "D2": 900, "D3": 1000, "N1": 900, "N2": 1000, "N3": 1100};
 
 function preload() {
@@ -173,6 +174,7 @@ function start () {
   pitch_min = undefined;
   plot_grid = [];
   plot_svaras = [];
+  time_grid = [];
 
   // Data for the basic plot
   var target = data[input.value()];
@@ -202,6 +204,13 @@ function start () {
     }
   }
   console.log(plot_start, plot_end);
+
+  // Time grid
+  var second = ceil(plot_start);
+  while (second < plot_end) {
+    time_grid.push(map(second, plot_start, plot_end, 0, plot_w));
+    second++;
+  }
 
   // Search for max and min pitch range for the plot
   for (var i = plot_start * 100; i <= plot_end * 100; i++) {
@@ -273,6 +282,12 @@ function CreatePlot (id, start, end, group, index, isTarget) {
   this.title = "ID: " + id + "   |   " + time(start) + " (" + start + ") - " + time(end) + " (" + end + ")"
 
   this.display = function () {
+    for (var i = 0; i < time_grid.length; i++) {
+      strokeWeight(1);
+      stroke(200);
+      line(hor_sep + time_grid[i], this.boxY, hor_sep + time_grid[i], this.boxY + box_h);
+    }
+
     for (var i = 0; i < plot_grid.length; i++) {
       strokeWeight(1);
       stroke(200);
