@@ -199,25 +199,33 @@ function start () {
   plot_end = target.end;
   console.log(plot_start, plot_end);
 
-  // Search for the minimum time
+  // Search for the max and min time in parents
   for (var i = 0; i < target.parents.length; i++) {
     if (Object.keys(data).includes(str(target.parents[i]))) {
-      var value = data[target.parents[i]].start;
-      if (value < plot_start) {
-        plot_start = value;
+      var parent_start = data[target.parents[i]].start;
+      var parent_end = data[target.parents[i]].end;
+      if (parent_start < plot_start) {
+        plot_start = parent_start;
       }
-      parents.push([target.parents[i], value, data[target.parents[i]].end, data[target.parents[i]].group]);
+      if (parent_end > plot_end) {
+        plot_end = parent_end;
+      }
+      parents.push([target.parents[i], parent_start, parent_end, data[target.parents[i]].group]);
     }
   }
 
-  // Search for the maximum time
+  // Search for the max and min time in children
   for (var i = 0; i < target.children.length; i++) {
     if (Object.keys(data).includes(str(target.children[i]))) {
-      var value = data[target.children[i]].end;
-      if (value > plot_end) {
-        plot_end = value;
+      var child_start = data[target.children[i]].start;
+      var child_end = data[target.children[i]].end;
+      if (child_start < plot_start) {
+        plot_start = child_start;
       }
-      children.push([target.children[i], data[target.children[i]].start, value, data[target.children[i]].group]);
+      if (child_end > plot_end) {
+        plot_end = child_end;
+      }
+      children.push([target.children[i], child_start, child_end, data[target.children[i]].group]);
     }
   }
   console.log(plot_start, plot_end);
