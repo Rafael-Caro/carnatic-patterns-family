@@ -271,6 +271,8 @@ function start () {
     plots_index++;
     plots_list.push(plot);
   }
+
+  window.scrollTo(0, 0);
 }
 
 function CreatePlot (id, start, end, group, index, isTarget) {
