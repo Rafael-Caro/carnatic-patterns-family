@@ -292,6 +292,7 @@ function start () {
   if (!search_history.includes(input.value())) {
     search_history.push(input.value());
     menu.option(input.value());
+    menu.selected(input.value());
   }
 
   window.scrollTo(0, 0);
