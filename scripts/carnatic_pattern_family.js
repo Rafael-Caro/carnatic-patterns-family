@@ -8,6 +8,9 @@ var trackFile = "tracks/Sanjay Subrahmanyan - Kamakshi.mp3";
 
 var input;
 var button;
+var menu;
+
+var search_history = [];
 
 var data_raw;
 var data = {};
@@ -136,8 +139,6 @@ function preload() {
     }
     raga_grid.push(c2h(2400, sa_pitch));
     svara_list.push('S');
-    console.log(svara_list);
-    console.log(raga_grid.length == svara_list.length);
   });
 }
 
@@ -147,11 +148,26 @@ function setup () {
   canvas.parent("sketch-holder");
 
   input = select("#input");
+  search_history.push(input.value());
 
   button = select("#button");
   button.mousePressed(function() {
     start();
   })
+
+  var head = select("#head");
+  head.style('width: ' + width + 'px;');
+
+  menu = createSelect();
+  menu.parent("head");
+  menu.position(width - input.width, 5);
+  menu.style('width: ' + input.width + 'px;');
+  menu.style('height: ' + input.height + 'px;');
+  menu.option(input.value());
+  menu.changed(function() {
+    input.value(menu.value());
+    start();
+  });
 
   start();
 }
@@ -270,6 +286,11 @@ function start () {
     var plot = new CreatePlot (children[i][0], children[i][1], children[i][2], children[i][3], plots_index, false);
     plots_index++;
     plots_list.push(plot);
+  }
+
+  if (!search_history.includes(input.value())) {
+    search_history.push(input.value());
+    menu.option(input.value());
   }
 
   window.scrollTo(0, 0);
