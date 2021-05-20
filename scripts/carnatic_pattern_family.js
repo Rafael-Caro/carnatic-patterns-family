@@ -277,6 +277,12 @@ function mouseClicked() {
   }
 }
 
+function keyPressed() {
+  if (keyCode == ENTER) {
+    start();
+  }
+}
+
 function time(seconds) {
   var niceTime;
   var sec = (seconds%60).toFixed(2);
