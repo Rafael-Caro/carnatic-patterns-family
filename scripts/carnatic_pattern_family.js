@@ -21,8 +21,6 @@ var text_h = 15;
 var box_h = plot_h - 2 * text_h;
 var plots_num = 36;
 
-// var parents = [];
-// var children = [];
 var plot_start;
 var plot_end;
 var plot_pitch = [];
@@ -137,6 +135,8 @@ function start () {
   plot_pitch = [];
   plots_index = 0;
   plots_list = [];
+  pitch_max = undefined;
+  pitch_min = undefined;
 
   // Data for the basic plot
   var target = data[input.value()];
