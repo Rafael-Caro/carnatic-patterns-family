@@ -1,5 +1,7 @@
 var secondsFactor = 0.0029024875016400026;
 var importance_threshold = 0.4;
+var sa_pitch = 146.832384;
+var raga = "Bhairavi";
 var dataFile = "files/kamakshi_hierarchy.tsv";
 var pitchFile = "files/kamakshi_pitch.tsv";
 var trackFile = "tracks/Sanjay Subrahmanyan - Kamakshi.mp3";
@@ -16,7 +18,7 @@ var groups = {};
 var plot_h = 200;
 var plot_w = 1000;
 var ver_sep = 20;
-var hor_sep = 10;
+var hor_sep = 30;
 var text_h = 15;
 var box_h = plot_h - 2 * text_h;
 var plots_num = 36;
@@ -30,6 +32,12 @@ var plots_list = [];
 
 var pitch_max;
 var pitch_min;
+
+var raga_grid = [];
+var svara_list = [];
+var plot_grid = [];
+var plot_svaras = [];
+var svaras = {"R1": 100, "R2": 200, "R3": 300, "G1": 200, "G2": 300, "G3": 400, "M1": 500, "M2": 600, "P": 700, "D1": 800, "D2": 900, "D3": 1000, "N1": 900, "N2": 1000, "N3": 1100};
 
 function preload() {
   data_raw = loadTable(dataFile, "tsv", "header", function () {
@@ -104,6 +112,32 @@ function preload() {
   });
 
   track = loadSound(trackFile);
+
+  var ragas = loadJSON('files/raga-svaras.json', function() {
+    var raga_svaras = ragas[raga];
+    raga_grid.push(c2h(-1200, sa_pitch));
+    svara_list.push('S');
+    for (var i = 0; i < raga_svaras.length; i++) {
+      raga_grid.push(c2h(svaras[raga_svaras[i]]-1200, sa_pitch));
+      svara_list.push(raga_svaras[i]);
+    }
+    raga_grid.push(sa_pitch);
+    svara_list.push('S');
+    for (var i = 0; i < raga_svaras.length; i++) {
+      raga_grid.push(c2h(svaras[raga_svaras[i]], sa_pitch));
+      svara_list.push(raga_svaras[i]);
+    }
+    raga_grid.push(c2h(1200, sa_pitch));
+    svara_list.push('S');
+    for (var i = 0; i < raga_svaras.length; i++) {
+      raga_grid.push(c2h(svaras[raga_svaras[i]]+1200, sa_pitch));
+      svara_list.push(raga_svaras[i]);
+    }
+    raga_grid.push(c2h(2400, sa_pitch));
+    svara_list.push('S');
+    console.log(svara_list);
+    console.log(raga_grid.length == svara_list.length);
+  });
 }
 
 function setup () {
@@ -137,6 +171,8 @@ function start () {
   plots_list = [];
   pitch_max = undefined;
   pitch_min = undefined;
+  plot_grid = [];
+  plot_svaras = [];
 
   // Data for the basic plot
   var target = data[input.value()];
@@ -187,6 +223,13 @@ function start () {
       }
     }
   }
+  for (var i = 0; i < raga_grid.length; i++) {
+    if (raga_grid[i] > pitch_min && raga_grid[i] < pitch_max) {
+      var line_y = map(raga_grid[i], pitch_min-10, pitch_max+10, box_h, 0);
+      plot_grid.push(line_y);
+      plot_svaras.push(svara_list[i]);
+    }
+  }
 
   // Computing pitch track for the basic plot
   for (var i = plot_start * 100; i <= plot_end * 100; i++) {
@@ -230,6 +273,19 @@ function CreatePlot (id, start, end, group, index, isTarget) {
   this.title = "ID: " + id + "   |   " + time(start) + " (" + start + ") - " + time(end) + " (" + end + ")"
 
   this.display = function () {
+    for (var i = 0; i < plot_grid.length; i++) {
+      strokeWeight(1);
+      stroke(200);
+      line(hor_sep, this.boxY + plot_grid[i], hor_sep + plot_w, this.boxY + plot_grid[i]);
+      textAlign(RIGHT, CENTER);
+      textSize(text_h * 0.8);
+      noStroke();
+      fill("black");
+      text(plot_svaras[i], hor_sep - 3, this.boxY + plot_grid[i]);
+      textAlign(LEFT, CENTER);
+      text(plot_svaras[i], hor_sep + plot_w + 3, this.boxY + plot_grid[i]);
+    }
+
     textAlign(LEFT, TOP);
     textSize(text_h);
     noStroke();
@@ -289,4 +345,8 @@ function time(seconds) {
   var min = int(seconds/60);
   niceTime = str(min) + ":" + sec.padStart(5, "0");
   return niceTime
+}
+
+function c2h (c, h) {
+  return h * (2 ** (c / 1200));
 }
