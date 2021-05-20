@@ -61,12 +61,6 @@ function preload() {
           }
         }
       }
-
-      // if (row.obj.child_sequence_ix.length == 0) {
-      //   element["children"] = [];
-      // } else {
-      //   element["children"] = JSON.parse(row.obj.child_sequence_ix);
-      // }
       data[str(row.obj.seq_start)] = element;
       if (row.obj.importance <= importance_threshold) {
         if (Object.keys(groups).includes(str(row.obj.group_number))) {
