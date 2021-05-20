@@ -6,6 +6,7 @@ var dataFile = "files/kamakshi_hierarchy.tsv";
 var pitchFile = "files/kamakshi_pitch.tsv";
 var trackFile = "tracks/Sanjay Subrahmanyan - Kamakshi.mp3";
 
+var head;
 var input;
 var button;
 var menu;
@@ -155,7 +156,7 @@ function setup () {
     start();
   })
 
-  var head = select("#head");
+  head = select("#head");
   head.style('width: ' + width + 'px;');
 
   menu = createSelect();
@@ -359,6 +360,7 @@ function CreatePlot (id, start, end, group, index, isTarget) {
 
   this.clicked = function () {
     if (mouseX > hor_sep && mouseX < hor_sep + plot_w &&
+        mouseY > window.pageYOffset &&
         mouseY > this.boxY && mouseY < this.boxY + box_h) {
           track.play(undefined, undefined, 15, start, end-start);
         }
