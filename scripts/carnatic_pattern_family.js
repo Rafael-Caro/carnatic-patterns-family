@@ -323,7 +323,11 @@ function CreatePlot (id, start, end, group, index, isTarget) {
 
     for (var i = 0; i < plot_grid.length; i++) {
       strokeWeight(1);
-      stroke(200);
+      if (plot_svaras[i] == 'S') {
+        stroke(255, 0, 0, 150);
+      } else {
+        stroke(200);
+      }
       line(hor_sep, this.boxY + plot_grid[i], hor_sep + plot_w, this.boxY + plot_grid[i]);
       textAlign(RIGHT, CENTER);
       textSize(text_h * 0.8);
