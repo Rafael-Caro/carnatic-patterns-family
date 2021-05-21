@@ -362,7 +362,7 @@ function CreatePlot (id, start, end, group, index, isTarget) {
     if (isTarget) {
       fill(135, 206, 235, 50);
     } else {
-      fill(200, 50);
+      fill(200, 150);
     }
     noStroke();
     rect(this.segStart, this.boxY, this.segEnd-this.segStart, box_h);
