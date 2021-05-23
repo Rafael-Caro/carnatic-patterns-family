@@ -367,17 +367,27 @@ function CreatePlot (id, start, end, group, index, isTarget) {
   this.playing = false;
 
   this.display = function () {
-    textAlign(LEFT, TOP);
     strokeWeight(2);
     if (check_svara.checked()) {
       for (var i = 0; i < svara.length; i++) {
         stroke(255, 0, 0, 100);
         fill(255, 0, 0, 50);
         rect(hor_sep + svara[i]["start"], this.boxY, svara[i]["end"] - svara[i]["start"], box_h);
+        textAlign(LEFT, TOP);
         textSize(text_h);
         stroke(0);
         fill(255, 0, 0);
         text(svara[i]["label"], hor_sep + svara[i]["start"] + 5, this.boxY + 5);
+        if (svara[i].overflow == "left") {
+          text("<", hor_sep + svara[i]["start"] + 5, this.boxY + text_h + 5);
+        } else if (svara[i].overflow == "right") {
+          textAlign(RIGHT, TOP);
+          text(">", hor_sep + svara[i]["end"] - 5, this.boxY + text_h + 5);
+        } else if (svara[i].overflow == "both") {
+          text("<", hor_sep + svara[i]["start"] + 5, this.boxY + text_h + 5)
+          textAlign(RIGHT, TOP);
+          text(">", hor_sep + svara[i]["end"] - 5, this.boxY + text_h + 5);
+        }
       }
     }
     if (check_motifs.checked()) {
@@ -385,10 +395,21 @@ function CreatePlot (id, start, end, group, index, isTarget) {
         stroke(0, 255, 0, 150);
         fill(0, 255, 0, 50);
         rect(hor_sep + motifs[i]["start"], this.boxY, motifs[i]["end"] - motifs[i]["start"], box_h);
+        textAlign(LEFT, TOP);
         textSize(text_h);
         stroke(0);
         fill(0, 255, 0);
         text(motifs[i]["label"], hor_sep + motifs[i]["start"] + 5, this.boxY + 5);
+        if (motifs[i].overflow == "left") {
+          text("<", hor_sep + motifs[i]["start"] + 5, this.boxY + text_h + 5);
+        } else if (motifs[i].overflow == "right") {
+          textAlign(RIGHT, TOP);
+          text(">", hor_sep + motifs[i]["end"] - 5, this.boxY + text_h + 5);
+        } else if (motifs[i].overflow == "both") {
+          text("<", hor_sep + motifs[i]["start"] + 5, this.boxY + text_h + 5)
+          textAlign(RIGHT, TOP);
+          text(">", hor_sep + motifs[i]["end"] - 5, this.boxY + text_h + 5);
+        }
       }
     }
     if (check_phrases.checked()) {
@@ -396,10 +417,21 @@ function CreatePlot (id, start, end, group, index, isTarget) {
         stroke(0, 0, 255, 100);
         fill(0, 0, 255, 50);
         rect(hor_sep + phrases[i]["start"], this.boxY, phrases[i]["end"] - phrases[i]["start"], box_h);
+        textAlign(LEFT, TOP);
         textSize(text_h);
         stroke(0);
         fill(0, 0, 255);
         text(phrases[i]["label"], hor_sep + phrases[i]["start"] + 5, this.boxY + 5);
+        if (phrases[i].overflow == "left") {
+          text("<", hor_sep + phrases[i]["start"] + 5, this.boxY + text_h + 5);
+        } else if (phrases[i].overflow == "right") {
+          textAlign(RIGHT, TOP);
+          text(">", hor_sep + phrases[i]["end"] - 5, this.boxY + text_h + 5);
+        } else if (phrases[i].overflow == "both") {
+          text("<", hor_sep + phrases[i]["start"] + 5, this.boxY + text_h + 5)
+          textAlign(RIGHT, TOP);
+          text(">", hor_sep + phrases[i]["end"] - 5, this.boxY + text_h + 5);
+        }
       }
     }
 
@@ -486,6 +518,7 @@ function sortLists(init_list, empty_list) {
         element.label = init_element.label;
         element.start = 0;
         element.end = map(init_element.end, plot_start, plot_end, 0, plot_w);
+        element.overflow = "left";
         empty_list.push(element);
     // in
     } else if (init_element.start >= plot_start && init_element.end <= plot_end) {
@@ -493,6 +526,7 @@ function sortLists(init_list, empty_list) {
       element.label = init_element.label;
       element.start = map(init_element.start, plot_start, plot_end, 0, plot_w);
       element.end = map(init_element.end, plot_start, plot_end, 0, plot_w);
+      element.overflow = "";
       empty_list.push(element);
     // in but ending after
     } else if (init_element.start >= plot_start && init_element.start <= plot_end &&
@@ -501,6 +535,7 @@ function sortLists(init_list, empty_list) {
         element.label = init_element.label;
         element.start = map(init_element.start, plot_start, plot_end, 0, plot_w);
         element.end = plot_w;
+        element.overflow = "right";
         empty_list.push(element);
     // in but starts before and ends after
     } else if (init_element.start < plot_start && init_element.end > plot_end) {
@@ -508,6 +543,7 @@ function sortLists(init_list, empty_list) {
       element.label = init_element.label;
       element.start = 0;
       element.end = plot_w;
+      element.overflow = "both";
       empty_list.push(element);
     }
   }
