@@ -501,7 +501,11 @@ function CreatePlot (id, start, end, group, index, isTarget) {
           track.stop();
           this.playing = false;
         } else {
+          track.stop();
           track.play(undefined, undefined, volume, this.start, this.end-this.start);
+          for (var i = 0; i < plots_list.length; i++) {
+            plots_list[i].playing = false;
+          }
           this.playing = true;
         }
       }
