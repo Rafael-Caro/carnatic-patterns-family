@@ -495,20 +495,10 @@ function CreatePlot (id, start, end, group, index, isTarget) {
 
   this.clicked = function () {
     if (mouseX > hor_sep && mouseX < hor_sep + plot_w &&
-      mouseY > window.pageYOffset &&
-      mouseY > this.boxY && mouseY < this.boxY + box_h) {
-        if (!this.playing || !track.isPlaying()) {
-          track.stop();
-          track.play(undefined, undefined, volume, this.start, this.end-this.start);
-          for (var i = 0; i < plots_list.length; i++) {
-            plots_list[i].playing = false;
-          }
-          this.playing = true;
-        } else {
-          track.stop();
-          this.playing = false;
-        }
-      }
+    mouseY > window.pageYOffset &&
+    mouseY > this.boxY && mouseY < this.boxY + box_h) {
+      track.play(undefined, undefined, volume, start, end-start);
+    }
   }
 }
 
