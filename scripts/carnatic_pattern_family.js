@@ -377,7 +377,7 @@ function CreatePlot (id, start, end, group, index, isTarget) {
         textSize(text_h);
         stroke(0);
         fill(255, 0, 0);
-        text(svara[i]["label"], hor_sep + svara[i]["start"] + 5, this.boxY + 5);
+        text(svara[i]["label"], hor_sep + svara[i]["start"] + 5, this.boxY + 5, svara[i]["end"] - svara[i]["start"], text_h);
         if (svara[i].overflow == "left") {
           text("<", hor_sep + svara[i]["start"] + 5, this.boxY + text_h + 5);
         } else if (svara[i].overflow == "right") {
@@ -399,7 +399,7 @@ function CreatePlot (id, start, end, group, index, isTarget) {
         textSize(text_h);
         stroke(0);
         fill(0, 255, 0);
-        text(motifs[i]["label"], hor_sep + motifs[i]["start"] + 5, this.boxY + 5);
+        text(motifs[i]["label"], hor_sep + motifs[i]["start"] + 5, this.boxY + 5, motifs[i]["end"] - motifs[i]["start"], text_h);
         if (motifs[i].overflow == "left") {
           text("<", hor_sep + motifs[i]["start"] + 5, this.boxY + text_h + 5);
         } else if (motifs[i].overflow == "right") {
@@ -421,7 +421,7 @@ function CreatePlot (id, start, end, group, index, isTarget) {
         textSize(text_h);
         stroke(0);
         fill(0, 0, 255);
-        text(phrases[i]["label"], hor_sep + phrases[i]["start"] + 5, this.boxY + 5);
+        text(phrases[i]["label"], hor_sep + phrases[i]["start"] + 5, this.boxY + 5, phrases[i]["end"] - phrases[i]["start"], text_h);
         if (phrases[i].overflow == "left") {
           text("<", hor_sep + phrases[i]["start"] + 5, this.boxY + text_h + 5);
         } else if (phrases[i].overflow == "right") {
