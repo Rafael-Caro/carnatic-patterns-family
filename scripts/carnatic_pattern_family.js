@@ -310,11 +310,14 @@ function start () {
 
 function CreatePlot (id, start, end, group, index, isTarget) {
   this.id = id;
+  this.start = start;
+  this.end = end;
   this.y = (plot_h + ver_sep) * index + ver_sep;
   this.boxY = this.y + text_h
   this.segStart = map(start, plot_start, plot_end, hor_sep, hor_sep + plot_w);
   this.segEnd = map(end, plot_start, plot_end, hor_sep, hor_sep + plot_w);
   this.title = "ID: " + id + "   |   " + time(start) + " (" + start + ") - " + time(end) + " (" + end + ")"
+  this.playing = false;
 
   this.display = function () {
     for (var i = 0; i < time_grid.length; i++) {
@@ -375,10 +378,16 @@ function CreatePlot (id, start, end, group, index, isTarget) {
 
   this.clicked = function () {
     if (mouseX > hor_sep && mouseX < hor_sep + plot_w &&
-        mouseY > window.pageYOffset &&
-        mouseY > this.boxY && mouseY < this.boxY + box_h) {
-          track.play(undefined, undefined, volume, start, end-start);
+      mouseY > window.pageYOffset &&
+      mouseY > this.boxY && mouseY < this.boxY + box_h) {
+        if (this.playing) {
+          track.stop();
+          this.playing = false;
+        } else {
+          track.play(undefined, undefined, volume, this.start, this.end-this.start);
+          this.playing = true;
         }
+      }
   }
 }
 
