@@ -16,6 +16,8 @@ var menu;
 var check_svara;
 var check_motifs;
 var check_phrases;
+var groups_menu;
+var patterns_menu;
 
 var all_svara = [];
 var all_motifs = [];
@@ -65,7 +67,7 @@ function preload() {
     for (var i = 0; i < data_raw.rows.length; i++) {
       var row = data_raw.rows[i];
       var element = {};
-      element["group"] = row.obj.group_number;
+      element["group"] = int(row.obj.group_number);
       element["start"] = (row.obj.seq_start * secondsFactor).toFixed(2);
       element["end"] = (row.obj.seq_end * secondsFactor).toFixed(2);
       element["parents"] = []
@@ -88,10 +90,10 @@ function preload() {
       }
       data[str(row.obj.seq_start)] = element;
       if (row.obj.importance <= importance_threshold) {
-        if (Object.keys(groups).includes(str(row.obj.group_number))) {
-          groups[str(row.obj.group_number)].push(str(row.obj.seq_start))
+        if (Object.keys(groups).includes(str(int(row.obj.group_number)))) {
+          groups[int(row.obj.group_number)].push(int(row.obj.seq_start));
         } else {
-          groups[str(row.obj.group_number)] = [str(row.obj.seq_start)];
+          groups[int(row.obj.group_number)] = [int(row.obj.seq_start)];
         }
       }
     }
@@ -210,6 +212,32 @@ function setup () {
   check_svara = select("#svara");
   check_motifs = select("#motifs");
   check_phrases = select("#phrases");
+
+  groups_menu = select("#groups");
+  for (var i = 0; i < Object.keys(groups).length; i++) {
+    var k = Object.keys(groups)[i];
+    groups_menu.option(k);
+  }
+  groups_menu.value(data[input.value()].group);
+  groups_menu.changed(function() {
+    patterns_menu.elt.options.length = 0;
+    patterns_menu.option("-select-");
+    var group_patterns = groups[groups_menu.value()];
+    for (var i = 0; i < group_patterns.length; i++) {
+      patterns_menu.option(group_patterns[i]);
+    }
+  });
+
+  patterns_menu = select("#patterns");
+  var group_patterns = groups[groups_menu.value()];
+  for (var i = 0; i < group_patterns.length; i++) {
+    patterns_menu.option(group_patterns[i]);
+  }
+  patterns_menu.selected(input.value());
+  patterns_menu.changed(function() {
+    input.value(patterns_menu.value());
+    start();
+  });
 
   start();
 }
@@ -335,7 +363,7 @@ function start () {
   }
 
   // Target plot
-  var plot = new CreatePlot (input.value(), target.start, target.end, target.group, plots_index, true);
+  var plot = new CreatePlot (input.value(), target.start, target.end, int(target.group), plots_index, true);
   plots_index++;
   plots_list.push(plot);
 
@@ -351,6 +379,16 @@ function start () {
     menu.option(input.value());
     menu.selected(input.value());
   }
+
+  groups_menu.selected(data[input.value()].group);
+
+  patterns_menu.elt.options.length = 0;
+  patterns_menu.option("-select-");
+  var group_patterns = groups[groups_menu.value()];
+  for (var i = 0; i < group_patterns.length; i++) {
+    patterns_menu.option(group_patterns[i]);
+  }
+  patterns_menu.selected(input.value());
 
   window.scrollTo(0, 0);
 }

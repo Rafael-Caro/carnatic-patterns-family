@@ -12,14 +12,18 @@
   <body>
     <main style="font-family: Arial;">
       <div id="head" style="position: sticky; top: 0px; background-color: rgba(255,255,255,0.9); padding: 5px;">
-        <input id="input" type="text" value="21186">
+        <input id="input" type="text" value="21186" style="width: 100px; height: 16px;">
         <button id="button">Submit</button>
         <input type="checkbox" id="svara" style="margin-left: 50px;">
         <label>svara</label>
-        <input type="checkbox" id="motifs" style="margin-left: 50px;" checked>
+        <input type="checkbox" id="motifs" style="margin-left: 15px;" checked>
         <label>motifs</label>
-        <input type="checkbox" id="phrases" style="margin-left: 50px;">
+        <input type="checkbox" id="phrases" style="margin-left: 15px;">
         <label>phrases</label>
+        <label style="margin-left: 50px;">Groups: </label>
+        <select id="groups" style="width: 100px; height: 22px;"></select>
+        <label style="margin-left: 15px;">Patterns: </label>
+        <select id="patterns" style="width: 100px; height: 22px;"></select>
       </div>
       <div id="sketch-holder"></div>
     </main>
