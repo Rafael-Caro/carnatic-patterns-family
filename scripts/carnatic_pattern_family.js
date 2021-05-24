@@ -35,7 +35,7 @@ var ver_sep = 20;
 var hor_sep = 30;
 var text_h = 15;
 var box_h = plot_h - 2 * text_h;
-var plots_num = 36;
+var plots_num;
 
 var plot_start;
 var plot_end;
@@ -473,7 +473,7 @@ function CreatePlot (id, start, end, group, index, isTarget) {
     noFill();
     beginShape();
     for (var i = 0; i < plot_pitch.length; i++) {
-      vertex(plot_pitch[i][0] + hor_sep, plot_pitch[i][1] + this.boxY)
+      vertex(plot_pitch[i][0] + hor_sep, plot_pitch[i][1] + this.boxY);
     }
     endShape();
 
