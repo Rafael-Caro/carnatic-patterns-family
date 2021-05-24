@@ -462,7 +462,7 @@ function CreatePlot (id, start, end, group, index, isTarget) {
     textSize(text_h);
     noStroke();
     fill("black");
-    text(this.title, hor_sep, this.y);
+    text(this.title, hor_sep, this.y-3);
     text(time(plot_start) + " (" + plot_start + ")", hor_sep, this.boxY+box_h+3);
     textAlign(RIGHT, TOP);
     text(groups[group] + " (" + groups[group].length + ")", hor_sep + plot_w, this.y);
@@ -477,20 +477,20 @@ function CreatePlot (id, start, end, group, index, isTarget) {
     }
     endShape();
 
-    strokeWeight(2);
+    stroke("black");
+    strokeWeight(3);
+    noFill();
+    rect(hor_sep, this.boxY, plot_w, box_h);
+
+    strokeWeight(6);
     if (isTarget) {
       stroke(135, 206, 235);
-      fill(135, 206, 235, 100);
+      fill(135, 206, 235, 125);
     } else {
       stroke(200);
       fill(200, 175);
     }
     rect(this.segStart, this.boxY, this.segEnd-this.segStart, box_h);
-
-    stroke("black");
-    strokeWeight(3);
-    noFill();
-    rect(hor_sep, this.boxY, plot_w, box_h);
   }
 
   this.clicked = function () {
